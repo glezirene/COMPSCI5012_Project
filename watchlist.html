@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Watchlist – MoodFlix{% endblock %}
+
+{% block content %}
+<h1 style="margin-bottom:1.25rem;color:#9b59b6;">My Watchlist</h1>
+
+{% if items %}
+<div class="film-grid">
+    {% for item in items %}
+    <div class="film-card" style="position:relative;">
+        <a href="{% url 'film_detail' item.film.pk %}" style="text-decoration:none;color:inherit;">
+            <div class="film-poster">🎬</div>
+            <div class="film-info">
+                <div class="film-title">{{ item.film.title }}</div>
+                <div class="film-year">{{ item.film.release_year }}</div>
+                <div class="film-genre">{{ item.film.genre }}</div>
+            </div>
+        </a>
+        <div style="padding:0 0.6rem 0.6rem;">
+            <a href="{% url 'add_review' item.film.pk %}" class="btn btn-primary btn-sm" style="width:100%;text-align:center;display:block;margin-bottom:0.35rem;">Log review</a>
+            <form method="post" action="{% url 'watchlist_remove' item.film.pk %}">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{% url 'watchlist' %}">
+                <button type="submit" class="btn btn-secondary btn-sm" style="width:100%;">Remove</button>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="card" style="text-align:center;padding:3rem;">
+    <p style="color:#888;margin-bottom:1rem;">Your watchlist is empty.</p>
+    <a href="{% url 'film_list' %}" class="btn btn-primary">Browse Films</a>
+</div>
+{% endif %}
+{% endblock %}

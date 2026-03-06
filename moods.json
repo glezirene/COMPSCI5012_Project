@@ -1,0 +1,8 @@
+[
+  {"model": "films.mood", "pk": 1, "fields": {"name": "Happy"}},
+  {"model": "films.mood", "pk": 2, "fields": {"name": "Sad"}},
+  {"model": "films.mood", "pk": 3, "fields": {"name": "Anxious"}},
+  {"model": "films.mood", "pk": 4, "fields": {"name": "Nostalgic"}},
+  {"model": "films.mood", "pk": 5, "fields": {"name": "Excited"}},
+  {"model": "films.mood", "pk": 6, "fields": {"name": "Scared"}}
+]

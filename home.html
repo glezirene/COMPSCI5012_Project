@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}MoodFlix – Home{% endblock %}
+
+{% block content %}
+<div class="home-grid">
+
+    <!-- Left: Recent Reviews -->
+    <div class="card">
+        <div class="card-title">Recent Reviews</div>
+        {% if user.is_authenticated %}
+            {% if recent_reviews %}
+                {% for r in recent_reviews %}
+                <div class="review-item">
+                    <a href="{% url 'film_detail' r.film.pk %}" style="color:#fff;text-decoration:none;font-weight:600;font-size:0.85rem;">{{ r.film.title }}</a>
+                    <div class="review-meta">{{ r.mood.name }} · <span class="stars">{% for i in "12345" %}{% if forloop.counter <= r.rating %}★{% else %}☆{% endif %}{% endfor %}</span></div>
+                    {% if r.review_text %}
+                    <div class="review-text">{{ r.review_text|truncatechars:80 }}</div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+                <div style="margin-top:0.75rem;text-align:center;">
+                    <a href="{% url 'profile' %}" class="btn btn-secondary btn-sm">View all</a>
+                </div>
+            {% else %}
+                <p style="color:#888;font-size:0.85rem;text-align:center;">No reviews yet.<br>Start logging films!</p>
+            {% endif %}
+        {% else %}
+            <p style="color:#888;font-size:0.85rem;text-align:center;"><a href="{% url 'login' %}" style="color:#9b59b6;">Log in</a> to see your reviews.</p>
+        {% endif %}
+    </div>
+
+    <!-- Centre: Search + Film grid -->
+    <div class="card">
+        <div class="card-title">Search</div>
+        <form method="get" action="{% url 'film_list' %}" style="margin-bottom:1rem;">
+            <input type="text" name="q" value="{{ query }}" placeholder="Search by movie title..." class="form-control">
+            {% if mood_id %}
+            <input type="hidden" name="mood_id" value="{{ mood_id }}">
+            {% endif %}
+        </form>
+        <div class="film-grid">
+            {% for film in films %}
+            <a href="{% url 'film_detail' film.pk %}" class="film-card">
+                <div class="film-poster">🎬</div>
+                <div class="film-info">
+                    <div class="film-title">{{ film.title }}</div>
+                    <div class="film-year">{{ film.release_year }}</div>
+                    <div class="film-genre">{{ film.genre }}</div>
+                </div>
+            </a>
+            {% empty %}
+            <p style="color:#888;grid-column:1/-1;text-align:center;">No films found.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Right: Mood filter -->
+    <div class="card">
+        <div class="card-title">What are you in the mood for?</div>
+        <div class="mood-grid">
+            {% for mood in moods %}
+            <a href="{% url 'film_list' %}?mood_id={{ mood.id }}"
+               class="mood-btn {% if mood_id == mood.id|stringformat:'s' %}active{% endif %}">
+                {{ mood.name }}
+            </a>
+            {% endfor %}
+        </div>
+        {% if mood_id %}
+        <div style="margin-top:0.75rem;text-align:center;">
+            <a href="{% url 'home' %}" class="btn btn-secondary btn-sm">Clear filter</a>
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}Profile – MoodFlix{% endblock %}
+
+{% block content %}
+<div style="display:grid;grid-template-columns:1fr 260px;gap:1.5rem;align-items:start;">
+
+    <!-- Reviews -->
+    <div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem;">
+            <h1 style="color:#9b59b6;">{{ user.username }}'s Reviews</h1>
+            <a href="{% url 'film_list' %}" class="btn btn-primary btn-sm">+ Log a film</a>
+        </div>
+
+        <!-- Mood filter chips -->
+        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1.25rem;">
+            <a href="{% url 'profile' %}" class="btn btn-sm {% if not mood_id %}btn-primary{% else %}btn-secondary{% endif %}">All</a>
+            {% for mood in moods %}
+            <a href="?mood_id={{ mood.id }}"
+               class="btn btn-sm {% if mood_id == mood.id|stringformat:'s' %}btn-primary{% else %}btn-secondary{% endif %}">
+                {{ mood.name }}
+            </a>
+            {% endfor %}
+        </div>
+
+        {% if reviews %}
+            {% for review in reviews %}
+            <div class="card" style="margin-bottom:0.75rem;">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                    <div>
+                        <a href="{% url 'film_detail' review.film.pk %}" style="color:#fff;font-weight:700;text-decoration:none;">{{ review.film.title }}</a>
+                        <span style="color:#888;font-size:0.8rem;margin-left:0.5rem;">{{ review.film.release_year }}</span>
+                    </div>
+                    <div style="display:flex;gap:0.5rem;align-items:center;">
+                        <span class="stars">{% for i in "12345" %}{% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}{% endfor %}</span>
+                        <span style="background:#9b59b6;color:#fff;padding:0.15rem 0.5rem;border-radius:20px;font-size:0.75rem;">{{ review.mood.name }}</span>
+                    </div>
+                </div>
+                <div style="color:#666;font-size:0.75rem;margin-top:0.3rem;">{{ review.watched_at|date:"d M Y, H:i" }}</div>
+                {% if review.review_text %}
+                <p style="margin-top:0.5rem;color:#ccc;font-size:0.875rem;line-height:1.5;">{{ review.review_text }}</p>
+                {% endif %}
+                <div style="margin-top:0.5rem;display:flex;gap:0.5rem;">
+                    <a href="{% url 'edit_review' review.pk %}" class="btn btn-secondary btn-sm">Edit</a>
+                    <a href="{% url 'delete_review' review.pk %}" class="btn btn-danger btn-sm">Delete</a>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="card" style="text-align:center;padding:2rem;">
+                <p style="color:#888;">No reviews {% if mood_id %}for this mood{% else %}yet{% endif %}.</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Stats sidebar -->
+    <div>
+        <div class="card">
+            <div class="card-title">My Stats</div>
+            {% if top_mood %}
+            <p style="color:#888;font-size:0.85rem;text-align:center;margin-bottom:1rem;">
+                Most common mood:<br>
+                <span style="color:#9b59b6;font-size:1.1rem;font-weight:700;">{{ top_mood.mood__name }}</span>
+                <span style="color:#666;font-size:0.8rem;"> ({{ top_mood.count }}×)</span>
+            </p>
+            {% endif %}
+            {% if mood_stats %}
+            <div style="display:flex;flex-direction:column;gap:0.4rem;">
+                {% for stat in mood_stats %}
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:0.35rem 0;border-bottom:1px solid #2a2a4a;">
+                    <span style="font-size:0.85rem;">{{ stat.mood__name }}</span>
+                    <span style="background:#2a2a4a;padding:0.1rem 0.5rem;border-radius:20px;font-size:0.75rem;color:#9b59b6;">{{ stat.count }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p style="color:#888;font-size:0.85rem;text-align:center;">Log some films to see your stats!</p>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}
