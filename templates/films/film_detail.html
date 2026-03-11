@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}{{ film.title }} – MoodFlix{% endblock %}
+
+{% block content %}
+<div style="display:grid;grid-template-columns:200px 1fr;gap:2rem;align-items:start;">
+
+    <!-- Poster -->
+    <div>
+        <div class="film-poster" style="border-radius:10px;aspect-ratio:2/3;font-size:4rem;">🎬</div>
+        {% if user.is_authenticated %}
+        <div style="margin-top:0.75rem;">
+            {% if in_watchlist %}
+            <form method="post" action="{% url 'watchlist_remove' film.pk %}">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="">
+                <button type="submit" class="btn btn-secondary" style="width:100%;">✓ In Watchlist</button>
+            </form>
+            {% else %}
+            <form method="post" action="{% url 'watchlist_add' film.pk %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary" style="width:100%;">+ Watchlist</button>
+            </form>
+            {% endif %}
+            <a href="{% url 'add_review' film.pk %}" class="btn btn-primary" style="width:100%;text-align:center;margin-top:0.5rem;display:block;">Log a review</a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Info -->
+    <div>
+        <h1 style="color:#fff;margin-bottom:0.25rem;">{{ film.title }}</h1>
+        <p style="color:#9b59b6;margin-bottom:0.75rem;">{{ film.release_year }} · {{ film.genre }}</p>
+        {% if film.description %}
+        <p style="color:#bbb;line-height:1.6;margin-bottom:1.5rem;">{{ film.description }}</p>
+        {% endif %}
+
+        <h2 style="color:#9b59b6;font-size:1rem;margin-bottom:1rem;">Reviews</h2>
+        {% for review in reviews %}
+        <div class="card" style="margin-bottom:0.75rem;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                <div>
+                    <strong style="color:#fff;">{{ review.user.username }}</strong>
+                    <span class="stars" style="margin-left:0.5rem;">{% for i in "12345" %}{% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}{% endfor %}</span>
+                    <span style="margin-left:0.5rem;background:#9b59b6;color:#fff;padding:0.15rem 0.5rem;border-radius:20px;font-size:0.75rem;">{{ review.mood.name }}</span>
+                </div>
+                <span style="color:#666;font-size:0.75rem;">{{ review.watched_at|date:"d M Y" }}</span>
+            </div>
+            {% if review.review_text %}
+            <p style="margin-top:0.5rem;color:#ccc;font-size:0.9rem;">{{ review.review_text }}</p>
+            {% endif %}
+            {% if user == review.user %}
+            <div style="margin-top:0.5rem;">
+                <a href="{% url 'edit_review' review.pk %}" class="btn btn-secondary btn-sm">Edit</a>
+                <a href="{% url 'delete_review' review.pk %}" class="btn btn-danger btn-sm">Delete</a>
+            </div>
+            {% endif %}
+        </div>
+        {% empty %}
+        <p style="color:#888;">No reviews yet. Be the first!</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
