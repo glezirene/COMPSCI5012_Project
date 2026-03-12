@@ -88,7 +88,7 @@ def film_list_view(request):
     if query:
         films = films.filter(title__icontains=query)
     if mood_id:
-        films = films.filter(reviewentry__mood__id=mood_id).distinct()
+        films = films.filter(reviews__mood__id=mood_id).distinct()
 
     moods = Mood.objects.all()
     return render(request, "films/film_list.html", {
