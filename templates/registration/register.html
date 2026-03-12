@@ -7,30 +7,34 @@
         <div class="card-body">
             <h3 class="custom-card-title text-center mb-4">Create an Account</h3>
 
-            <form method="POST">
+            <form id="form" method="POST" action="{% url 'register' %}" enctype="multipart/form-data">
                 {% csrf_token %}
 
                 <div class="mb-3">
-                    <label class="form-label custom-card-title">Username</label>
-                    <input type="text" name="username" class="form-control" placeholder="Username" required>
+                {{ form.username.label_tag }}
+                {{ form.username }}
+                {{ form.username.errors }}
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label custom-card-title">Email</label>
-                    <input type="email" name="email" class="form-control" placeholder="Email address" required>
+                {{ form.email.label_tag }}
+                {{ form.email }}
+                {{ form.email.errors }}
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label custom-card-title">Password</label>
-                    <input type="password" name="password1" class="form-control" placeholder="Password" required>
+                {{ form.password1.label_tag }}
+                {{ form.password1 }}
+                {{ form.password1.errors }}
                 </div>
 
-                <div class="mb-3">
-                    <label class="form-label custom-card-title">Confirm password</label>
-                    <input type="password" name="password2" class="form-control" placeholder="Confirm password" required>
+                <div class="mb-4">
+                {{ form.password2.label_tag }}
+                {{ form.password2 }}
+                {{ form.password2.errors }}
                 </div>
-
-                <div class="d-grid">
+                
+                <div class="d-grid mt-4">
                     <button type="submit" class="btn btn-success btn-lg btn-block">
                         Register
                     </button>
