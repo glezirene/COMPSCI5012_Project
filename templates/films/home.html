@@ -1,12 +1,12 @@
 {% extends "base.html" %}
-{% block title %}MoodFlix – Home{% endblock %}
+{% block title %}Home{% endblock %}
 
 {% block content %}
 <div class="home-grid">
 
     <!-- Left: Recent Reviews -->
-    <div class="card">
-        <div class="card-title">Recent Reviews</div>
+    <div class="custom-card">
+        <div class="custom-card-title">Recent Reviews</div>
         {% if user.is_authenticated %}
             {% if recent_reviews %}
                 {% for r in recent_reviews %}
@@ -30,8 +30,8 @@
     </div>
 
     <!-- Centre: Search + Film grid -->
-    <div class="card">
-        <div class="card-title">Search</div>
+    <div class="custom-card">
+        <div class="custom-card-title">Search</div>
         <form method="get" action="{% url 'film_list' %}" style="margin-bottom:1rem;">
             <input type="text" name="q" value="{{ query }}" placeholder="Search by movie title..." class="form-control">
             {% if mood_id %}
@@ -55,12 +55,12 @@
     </div>
 
     <!-- Right: Mood filter -->
-    <div class="card">
-        <div class="card-title">What are you in the mood for?</div>
+    <div class="custom-card">
+        <div class="custom-card-title">What are you in the mood for?</div>
         <div class="mood-grid">
             {% for mood in moods %}
             <a href="{% url 'film_list' %}?mood_id={{ mood.id }}"
-               class="mood-btn {% if mood_id == mood.id|stringformat:'s' %}active{% endif %}">
+               class="mood-btn {{ mood.name|lower }}-btn {% if mood_id == mood.id|stringformat:'s' %}active{% endif %}">
                 {{ mood.name }}
             </a>
             {% endfor %}
