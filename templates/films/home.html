@@ -58,10 +58,9 @@
         <div class="custom-card-title">What are you in the mood for?</div>
         <div class="mood-grid">
             {% for mood in moods %}
-            <a href="{% url 'film_list' %}?mood_id={{ mood.id }}"
-               class="custom-btn {{ mood.name|lower }}-btn {% if mood_id == mood.id|stringformat:'s' %}active{% endif %}">
+            <button class="custom-btn {{ mood.name|lower }}-btn" data-mood-id="{{ mood.id }}">
                 {{ mood.name }}
-            </a>
+            </button>
             {% endfor %}
         </div>
         {% if mood_id %}
@@ -79,13 +78,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const searchInput = document.getElementById('filmSearch');
     const filmGrid = document.querySelector('.film-grid');
+    const moodButtons = document.querySelectorAll('.mood-grid button');
+    let selectedMoodId = "";
 
-    searchInput.addEventListener('input', function () {
-        const query = this.value;
+    function fetchFilms() {
+        const query = searchInput.value;
 
-        fetch(`/ajax/film-search/?q=${encodeURIComponent(query)}`)
+        let url = `/ajax/film-search/?q=${encodeURIComponent(query)}`
+        if (selectedMoodId) {
+            url += `&mood_id=${selectedMoodId}`;
+        }
+
+        fetch(url)
             .then(response => response.json())
-
             .then(data => {
                 filmGrid.innerHTML = "";
                 if (!data.films || data.films.length === 0) {
@@ -109,7 +114,27 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
             })
             .catch(error => console.error("Search error:", error));
+
+    }
+
+    // search input handler
+    searchInput.addEventListener('input', fetchFilms);
+
+    // mood button input handler
+    moodButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            moodButtons.forEach(btn => btn.classList.remove('active'));
+            if (selectedMoodId === this.dataset.moodId) {
+                selectedMoodId = "";
+            } else {
+                selectedMoodId = this.dataset.moodId;
+                this.classList.add('active');
+            }
+            fetchFilms();
+        });
     });
+    fetchFilms();
 });
+
 </script>
 {% endblock %}
