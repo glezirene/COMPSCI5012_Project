@@ -293,12 +293,6 @@ form label {
 }
 
 /* Profile page */
-.profile-layout{
-    display: grid;
-    grid-template-columns: 1fr 260px;
-    gap: 1.5rem;
-    align-items: start;
-}
 .mood-stats{
     display:flex;
     flex-direction:column;

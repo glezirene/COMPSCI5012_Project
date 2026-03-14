@@ -2,99 +2,103 @@
 {% block title %}Profile{% endblock %}
 
 {% block content %}
-<div class="profile-layout">
-
-    <!-- Reviews -->
-    <div>
-        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
-            <h1 class="ubuntu-lpurple-text">{{ user.username }}'s Reviews</h1>
-            <a href="{% url 'home' %}" class="btn btn-primary btn-sm">+ Log a film</a>
-        </div>
-
-        <!-- Mood filter chips -->
-        <div class="d-flex flex-wrap gap-2 mb-4">
-            <button class="btn-sm custom-btn all-btn active" data-mood="all" style="width: 80px;">All</button>
-            {% for mood in moods %}
-            <button class="btn-sm custom-btn {{ mood.name|lower }}-btn" data-mood="{{ mood.name|lower }}" style="width: 80px;">
-                {{ mood.name }}
-            </button>
-            {% endfor %}
-        </div>
-
-        {% if reviews %}
-            {% for review in reviews %}
-            <div class="card custom-card mb-4 review-card" data-mood="{{ review.mood.name|lower }}">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                        <a href="{% url 'film_detail' review.film.pk %}" class="custom-card-title" style="font-family:ubuntu;font-size:24px;">{{ review.film.title }}</a>
-                        <span class="ubuntu-lpurple-text" style="font-size:0.8rem;margin-left:0.5rem;">{{ review.film.release_year }}</span>
-                    </div>
-                    <div class="d-flex align-items-center gap-2">
-                        <span class="stars">{% for i in "12345" %}{% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}{% endfor %}</span>
-                        <span class="{{ review.mood.name|lower }}-btn" style="padding:0.15rem 0.5rem;border-radius:20px;font-size:0.75rem;">{{ review.mood.name }}</span>
-                    </div>
-                </div>
-                <div class="ubuntu-lpurple-text" style="font-size:0.8rem;margin-top:0.3rem;">Date watched: {{ review.watched_at|date:"d M Y" }}</div>
-                {% if review.review_text %}
-                <p class="review-text" style="margin-top:0.5rem;line-height:1.5;">{{ review.review_text }}</p>
-                {% endif %}
-                <div class="d-flex gap-2 mt-2">
-                    <a href="{% url 'edit_review' review.pk %}" class="btn btn-secondary btn-sm">Edit</a>
-                    <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteReviewModal" data-review-id="{{ review.pk }}">
-                        Delete
-                    </button>
-                </div>
+<div class="row g-4">
+    <div class="col-lg-9">
+        <div>
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+                <h1 class="ubuntu-lpurple-text">{{ user.username }}'s Reviews</h1>
+                <a href="{% url 'home' %}" class="btn btn-primary btn-sm">+ Log a film</a>
             </div>
-            {% endfor %}
-        {% else %}
-            <div class="card custom-card text-center" style="padding:2rem;">
-                <p class="review-text">No reviews {% if mood_id %}for this mood{% else %}yet{% endif %}.</p>
-            </div>
-        {% endif %}
-    </div>
-    <div class="modal" id="deleteReviewModal">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title text-center">Are you sure you want to delete this review?</h4>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-footer">
-                    <a id="confirmDeleteBtn" class="custom-btn btn-danger btn-sm">Delete review</a>
-                    <button type="button" class="custom-btn all-btn btn-sm" data-bs-dismiss="modal">Cancel</button>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- Stats sidebar -->
-    <div>
-        <div class="custom-card stats-card">
-            <div class="custom-card-title">My Stats</div>
-
-            {% if top_mood %}
-            <p class="ubuntu-white-text" style="font-size:0.85rem;text-align:center;margin-bottom:1rem;">Most common mood:</p>
-            <div style="text-align:center; position:relative; display:inline-block; width:100%;">
-                <span class="{{ top_mood.mood__name|lower }}-btn" style="color:#141515;padding:0.15rem 0.5rem;border-radius:20px;font-size:1.1rem;font-weight:400;">{{ top_mood.mood__name }}</span>
-                <span class="ubuntu-lpurple-text" style="font-size:0.8rem;position:absolute;margin-left:0.4rem;"> ({{ top_mood.count }}×)</span>
-            </div>
-            {% endif %}
-
-            {% if mood_stats %}
-            <div class="mood-stats">
-                {% for stat in mood_stats %}
-                <div class="mood-stat-row">
-                    <span>{{ stat.mood__name }}</span>
-                    <span class="mood-stat-count">{{ stat.count }}</span>
-                </div>
+            <!-- Mood filter chips -->
+            <div class="d-flex flex-wrap gap-2 mb-4">
+                <button class="btn-sm custom-btn flex-fill all-btn active" data-mood="all" style="width: 80px;">All</button>
+                {% for mood in moods %}
+                <button class="btn-sm custom-btn flex-fill {{ mood.name|lower }}-btn" data-mood="{{ mood.name|lower }}" style="width: 80px;">
+                    {{ mood.name }}
+                </button>
                 {% endfor %}
             </div>
-            {% else %}
-            <p class="ubuntu-lpurple-text text-center">Log some films to see your stats!</p>
-            {% endif %}
 
+            {% if reviews %}
+                {% for review in reviews %}
+                <div class="card custom-card mb-4 review-card" data-mood="{{ review.mood.name|lower }}">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <a href="{% url 'film_detail' review.film.pk %}" class="custom-card-title" style="font-family:ubuntu;font-size:24px;">{{ review.film.title }}</a>
+                            <span class="ubuntu-lpurple-text" style="font-size:0.8rem;margin-left:0.5rem;">{{ review.film.release_year }}</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="stars">{% for i in "12345" %}{% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}{% endfor %}</span>
+                            <span class="{{ review.mood.name|lower }}-btn" style="padding:0.15rem 0.5rem;border-radius:20px;font-size:0.75rem;">{{ review.mood.name }}</span>
+                        </div>
+                    </div>
+                    <div class="ubuntu-lpurple-text" style="font-size:0.8rem;margin-top:0.3rem;">Date watched: {{ review.watched_at|date:"d M Y" }}</div>
+                    {% if review.review_text %}
+                    <p class="review-text" style="margin-top:0.5rem;line-height:1.5;">{{ review.review_text }}</p>
+                    {% endif %}
+                    <div class="d-flex gap-2 mt-2">
+                        <a href="{% url 'edit_review' review.pk %}" class="btn btn-secondary btn-sm">Edit</a>
+                        <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteReviewModal" data-review-id="{{ review.pk }}">
+                            Delete
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="card custom-card text-center" style="padding:2rem;">
+                    <p class="review-text">No reviews {% if mood_id %}for this mood{% else %}yet{% endif %}.</p>
+                </div>
+            {% endif %}
+        </div>
+        <div class="modal" id="deleteReviewModal">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title text-center">Are you sure you want to delete this review?</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-footer">
+                        <a id="confirmDeleteBtn" class="custom-btn btn-danger btn-sm">Delete review</a>
+                        <button type="button" class="custom-btn all-btn btn-sm" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+    
+    <div class="col-lg-3">
+        <!-- Stats sidebar -->
+        <div>
+            <div class="custom-card stats-card">
+                <div class="custom-card-title">My Stats</div>
+
+                {% if top_mood %}
+                <p class="ubuntu-white-text" style="font-size:0.85rem;text-align:center;margin-bottom:1rem;">Most common mood:</p>
+                <div style="text-align:center; position:relative; display:inline-block; width:100%;">
+                    <span class="{{ top_mood.mood__name|lower }}-btn" style="color:#141515;padding:0.15rem 0.5rem;border-radius:20px;font-size:1.1rem;font-weight:400;">{{ top_mood.mood__name }}</span>
+                    <span class="ubuntu-lpurple-text" style="font-size:0.8rem;position:absolute;margin-left:0.4rem;"> ({{ top_mood.count }}×)</span>
+                </div>
+                {% endif %}
+
+                {% if mood_stats %}
+                <div class="mood-stats">
+                    {% for stat in mood_stats %}
+                    <div class="mood-stat-row">
+                        <span>{{ stat.mood__name }}</span>
+                        <span class="mood-stat-count">{{ stat.count }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="ubuntu-lpurple-text text-center">Log some films to see your stats!</p>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+</div>
+    
 
 </div>
 {% endblock %}
