@@ -1,74 +1,83 @@
 {% extends "base.html" %}
-{% block title %}{{ action }} Review – MoodFlix{% endblock %}
+{% block title %}{{ action }} Review {% endblock %}
 
 {% block content %}
-<div style="max-width:700px;margin:0 auto;">
-<div style="display:grid;grid-template-columns:160px 1fr;gap:2rem;align-items:start;">
+<div class="container review-container">
+    <div class="row g-4 justify-content-center align-items-start">
 
-    <!-- Film poster -->
-    <div>
-        <div class="film-poster" style="border-radius:10px;aspect-ratio:2/3;font-size:3rem;">🎬</div>
-        <div style="margin-top:0.75rem;">
-            <div style="font-size:1rem;font-weight:700;color:#fff;">{{ film.title }}</div>
-            <div style="font-size:0.8rem;color:#9b59b6;">{{ film.release_year }} · {{ film.genre }}</div>
+        <!-- Film poster -->
+        <div class="col-12 col-md-auto d-flex justify-content-center order-2 order-md-1">
+            <div class="card film-review-poster-card">
+                <div class="film-info">
+                    <img class="card-img-top" src="/static/placeholder.png" alt="Placeholder image">
+                    <!-- <div class="film-poster">🎬</div> -->
+                    <div class="film-details">
+                        <div class="film-title">{{ film.title }}</div>
+                        <div class="film-review-subtitle">{{ film.release_year }} · {{ film.genre }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form -->
+        <div class="col-12 col-md order-1 order-md-2" style="max-width: 1000px;">
+            <div class="film-review-card p-3">
+                <div class="custom-card-title">{{ action }} a Review</div>
+                <form method="post">
+                    {% csrf_token %}
+
+                    <!-- Star rating -->
+                    <div class="form-group">
+                        <label>What did you think?</label>
+                        <div class="star-rating">
+                            {% for choice_val, choice_label in form.rating.field.choices %}
+                            <label class="star-label {% if form.rating.value == choice_val|stringformat:'s' %}selected{% endif %}">
+                                <input type="radio" name="rating" value="{{ choice_val }}" {% if form.rating.value == choice_val|stringformat:'s' %}checked{% endif %} onchange="updateStars(this)">
+                                ★
+                            </label>
+                            {% endfor %}
+                        </div>
+                        {% if form.rating.errors %}
+                        <p class="form-error">{{ form.rating.errors }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Mood -->
+                    <div class="form-group">
+                        <label for="{{ form.mood.id_for_label }}">And how did you feel?</label>
+                        {{ form.mood }}
+                        {% if form.mood.errors %}<p class="form-error">{{ form.mood.errors }}</p>{% endif %}
+                    </div>
+
+                    <!-- Watched at -->
+                    <div class="form-group">
+                        <label for="{{ form.watched_at.id_for_label }}">Date watched</label>
+                        {{ form.watched_at }}
+                        {% if form.watched_at.errors %}<p class="form-error">{{ form.watched_at.errors }}</p>{% endif %}
+                    </div>
+
+                    <!-- Review text -->
+                    <div class="form-group">
+                        <label for="{{ form.review_text.id_for_label }}">Review (optional)</label>
+                        {{ form.review_text }}
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <a href="{% url 'film_detail' film.pk %}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-
-    <!-- Form -->
-    <div class="card">
-        <div class="card-title">{{ action }} Review</div>
-        <form method="post">
-            {% csrf_token %}
-
-            <!-- Star rating -->
-            <div class="form-group">
-                <label>Rating</label>
-                <div style="display:flex;gap:0.5rem;">
-                    {% for choice_val, choice_label in form.rating.field.choices %}
-                    <label style="cursor:pointer;font-size:1.5rem;color:{% if form.rating.value == choice_val|stringformat:'s' %}#f1c40f{% else %}#3a3a5a{% endif %};">
-                        <input type="radio" name="rating" value="{{ choice_val }}" {% if form.rating.value == choice_val|stringformat:'s' %}checked{% endif %} style="display:none;" onchange="updateStars(this)">
-                        ★
-                    </label>
-                    {% endfor %}
-                </div>
-                {% if form.rating.errors %}<p style="color:#e74c3c;font-size:0.8rem;">{{ form.rating.errors }}</p>{% endif %}
-            </div>
-
-            <!-- Mood -->
-            <div class="form-group">
-                <label for="{{ form.mood.id_for_label }}">Mood</label>
-                {{ form.mood }}
-                {% if form.mood.errors %}<p style="color:#e74c3c;font-size:0.8rem;">{{ form.mood.errors }}</p>{% endif %}
-            </div>
-
-            <!-- Watched at -->
-            <div class="form-group">
-                <label for="{{ form.watched_at.id_for_label }}">Watched at</label>
-                {{ form.watched_at }}
-                {% if form.watched_at.errors %}<p style="color:#e74c3c;font-size:0.8rem;">{{ form.watched_at.errors }}</p>{% endif %}
-            </div>
-
-            <!-- Review text -->
-            <div class="form-group">
-                <label for="{{ form.review_text.id_for_label }}">Review (optional)</label>
-                {{ form.review_text }}
-            </div>
-
-            <div style="display:flex;gap:0.75rem;">
-                <button type="submit" class="btn btn-primary">Submit</button>
-                <a href="{% url 'film_detail' film.pk %}" class="btn btn-secondary">Cancel</a>
-            </div>
-        </form>
-    </div>
-</div>
 </div>
 
 <script>
 function updateStars(radio) {
     const val = parseInt(radio.value);
-    const labels = radio.closest('div').querySelectorAll('label');
+    const labels = radio.closest('.star-rating').querySelectorAll('.star-label');
     labels.forEach((lbl, idx) => {
-        lbl.style.color = idx < val ? '#f1c40f' : '#3a3a5a';
+        lbl.classList.toggle('selected', idx < val);
     });
 }
 // Init on page load

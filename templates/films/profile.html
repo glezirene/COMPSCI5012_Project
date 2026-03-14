@@ -1,82 +1,110 @@
 {% extends "base.html" %}
-{% block title %}Profile – MoodFlix{% endblock %}
+{% block title %}Profile{% endblock %}
 
 {% block content %}
-<div style="display:grid;grid-template-columns:1fr 260px;gap:1.5rem;align-items:start;">
+<div class="profile-layout">
 
     <!-- Reviews -->
     <div>
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem;">
-            <h1 style="color:#9b59b6;">{{ user.username }}'s Reviews</h1>
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+            <h1 class="ubuntu-lpurple-text">{{ user.username }}'s Reviews</h1>
             <a href="{% url 'film_list' %}" class="btn btn-primary btn-sm">+ Log a film</a>
         </div>
 
         <!-- Mood filter chips -->
-        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1.25rem;">
-            <a href="{% url 'profile' %}" class="btn btn-sm {% if not mood_id %}btn-primary{% else %}btn-secondary{% endif %}">All</a>
+        <div class="d-flex flex-wrap gap-2 mb-4">
+            <button class="btn-sm custom-btn all-btn active" data-mood="all" style="width: 80px;">All</button>
             {% for mood in moods %}
-            <a href="?mood_id={{ mood.id }}"
-               class="btn btn-sm {% if mood_id == mood.id|stringformat:'s' %}btn-primary{% else %}btn-secondary{% endif %}">
+            <button class="btn-sm custom-btn {{ mood.name|lower }}-btn" data-mood="{{ mood.name|lower }}" style="width: 80px;">
                 {{ mood.name }}
-            </a>
+            </button>
             {% endfor %}
         </div>
 
         {% if reviews %}
             {% for review in reviews %}
-            <div class="card" style="margin-bottom:0.75rem;">
-                <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+            <div class="card custom-card review-card" data-mood="{{ review.mood.name|lower }}">
+                <div class="d-flex justify-content-between align-items-start">
                     <div>
-                        <a href="{% url 'film_detail' review.film.pk %}" style="color:#fff;font-weight:700;text-decoration:none;">{{ review.film.title }}</a>
-                        <span style="color:#888;font-size:0.8rem;margin-left:0.5rem;">{{ review.film.release_year }}</span>
+                        <a href="{% url 'film_detail' review.film.pk %}" class="custom-card-title" style="font-family:ubuntu;font-size:24px;">{{ review.film.title }}</a>
+                        <span class="ubuntu-lpurple-text" style="font-size:0.8rem;margin-left:0.5rem;">{{ review.film.release_year }}</span>
                     </div>
-                    <div style="display:flex;gap:0.5rem;align-items:center;">
+                    <div class="d-flex align-items-center gap-2">
                         <span class="stars">{% for i in "12345" %}{% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}{% endfor %}</span>
-                        <span style="background:#9b59b6;color:#fff;padding:0.15rem 0.5rem;border-radius:20px;font-size:0.75rem;">{{ review.mood.name }}</span>
+                        <span class="{{ review.mood.name|lower }}-btn" style="padding:0.15rem 0.5rem;border-radius:20px;font-size:0.75rem;">{{ review.mood.name }}</span>
                     </div>
                 </div>
-                <div style="color:#666;font-size:0.75rem;margin-top:0.3rem;">{{ review.watched_at|date:"d M Y, H:i" }}</div>
+                <div class="ubuntu-lpurple-text" style="font-size:0.8rem;margin-top:0.3rem;">Date watched: {{ review.watched_at|date:"d M Y" }}</div>
                 {% if review.review_text %}
-                <p style="margin-top:0.5rem;color:#ccc;font-size:0.875rem;line-height:1.5;">{{ review.review_text }}</p>
+                <p class="review-text" style="margin-top:0.5rem;line-height:1.5;">{{ review.review_text }}</p>
                 {% endif %}
-                <div style="margin-top:0.5rem;display:flex;gap:0.5rem;">
+                <div class="d-flex gap-2 mt-2">
                     <a href="{% url 'edit_review' review.pk %}" class="btn btn-secondary btn-sm">Edit</a>
                     <a href="{% url 'delete_review' review.pk %}" class="btn btn-danger btn-sm">Delete</a>
                 </div>
             </div>
             {% endfor %}
         {% else %}
-            <div class="card" style="text-align:center;padding:2rem;">
-                <p style="color:#888;">No reviews {% if mood_id %}for this mood{% else %}yet{% endif %}.</p>
+            <div class="card custom-card text-center" style="padding:2rem;">
+                <p class="review-text">No reviews {% if mood_id %}for this mood{% else %}yet{% endif %}.</p>
             </div>
         {% endif %}
     </div>
 
     <!-- Stats sidebar -->
     <div>
-        <div class="card">
-            <div class="card-title">My Stats</div>
+        <div class="custom-card stats-card">
+            <div class="custom-card-title">My Stats</div>
+
             {% if top_mood %}
-            <p style="color:#888;font-size:0.85rem;text-align:center;margin-bottom:1rem;">
-                Most common mood:<br>
-                <span style="color:#9b59b6;font-size:1.1rem;font-weight:700;">{{ top_mood.mood__name }}</span>
-                <span style="color:#666;font-size:0.8rem;"> ({{ top_mood.count }}×)</span>
-            </p>
+            <p class="ubuntu-white-text" style="font-size:0.85rem;text-align:center;margin-bottom:1rem;">Most common mood:</p>
+            <div style="text-align:center; position:relative; display:inline-block; width:100%;">
+                <span class="{{ top_mood.mood__name|lower }}-btn" style="color:#141515;padding:0.15rem 0.5rem;border-radius:20px;font-size:1.1rem;font-weight:400;">{{ top_mood.mood__name }}</span>
+                <span class="ubuntu-lpurple-text" style="font-size:0.8rem;position:absolute;margin-left:0.4rem;"> ({{ top_mood.count }}×)</span>
+            </div>
             {% endif %}
+
             {% if mood_stats %}
-            <div style="display:flex;flex-direction:column;gap:0.4rem;">
+            <div class="mood-stats">
                 {% for stat in mood_stats %}
-                <div style="display:flex;justify-content:space-between;align-items:center;padding:0.35rem 0;border-bottom:1px solid #2a2a4a;">
-                    <span style="font-size:0.85rem;">{{ stat.mood__name }}</span>
-                    <span style="background:#2a2a4a;padding:0.1rem 0.5rem;border-radius:20px;font-size:0.75rem;color:#9b59b6;">{{ stat.count }}</span>
+                <div class="mood-stat-row">
+                    <span>{{ stat.mood__name }}</span>
+                    <span class="mood-stat-count">{{ stat.count }}</span>
                 </div>
                 {% endfor %}
             </div>
             {% else %}
-            <p style="color:#888;font-size:0.85rem;text-align:center;">Log some films to see your stats!</p>
+            <p class="ubuntu-lpurple-text text-center">Log some films to see your stats!</p>
             {% endif %}
+
         </div>
     </div>
 
 </div>
+{% endblock %}
+{% block scriptblock %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const buttons = document.querySelectorAll('.custom-btn');
+    const reviews = document.querySelectorAll('.review-card');
+
+    buttons.forEach(button => {
+        button.addEventListener('click', () => {
+            const selectedMood = button.getAttribute('data-mood');
+            buttons.forEach(btn => {
+                const moodClass = btn.dataset.mood + '-btn';
+                btn.classList.remove('active');
+            });
+            button.classList.add('active');
+            reviews.forEach(review => {
+                if (selectedMood === 'all' || review.dataset.mood === selectedMood) {
+                    review.style.display = '';
+                } else {
+                    review.style.display = 'none';
+                }
+            });
+        });
+    });
+});
+</script>
 {% endblock %}

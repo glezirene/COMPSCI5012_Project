@@ -1,8 +1,8 @@
 {% extends "base.html" %}
-{% block title %}Watchlist – MoodFlix{% endblock %}
+{% block title %}Watchlist{% endblock %}
 
 {% block content %}
-<h1 style="margin-bottom:1.25rem;color:#9b59b6;">My Watchlist</h1>
+<h1 class="ubuntu-lpurple-text">My Watchlist</h1>
 
 {% if items %}
 <div class="film-grid">
@@ -28,9 +28,9 @@
     {% endfor %}
 </div>
 {% else %}
-<div class="card" style="text-align:center;padding:3rem;">
-    <p style="color:#888;margin-bottom:1rem;">Your watchlist is empty.</p>
-    <a href="{% url 'film_list' %}" class="btn btn-primary">Browse Films</a>
+<div class="custom-card mt-3" style="text-align:center;padding:3rem;">
+    <p class="custom-card-title">Your watchlist is empty.</p>
+    <a href="{% url 'film_list' %}" class="custom-btn custom-btn-primary">Browse Films</a>
 </div>
 {% endif %}
 {% endblock %}

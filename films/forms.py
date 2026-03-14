@@ -25,11 +25,11 @@ class ReviewForm(forms.ModelForm):
         coerce=int,
         widget=forms.RadioSelect(attrs={"class": "star-radio"}),
     )
-    watched_at = forms.DateTimeField(
-        widget=forms.DateTimeInput(
-            attrs={"type": "datetime-local", "class": "form-control"}
+    watched_at = forms.DateField(
+        widget=forms.DateInput(
+            attrs={"type": "date", "class": "form-control"}
         ),
-        input_formats=["%Y-%m-%dT%H:%M"],
+        input_formats=["%Y-%m-%d"],
     )
 
     class Meta:
@@ -39,7 +39,7 @@ class ReviewForm(forms.ModelForm):
             "review_text": forms.Textarea(
                 attrs={"class": "form-control", "rows": 5, "placeholder": "Write your review..."}
             ),
-            "mood": forms.Select(attrs={"class": "form-control"}),
+            "mood": forms.Select(attrs={"class": "form-select"}),
         }
 
     def __init__(self, *args, **kwargs):

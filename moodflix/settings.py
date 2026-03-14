@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+STATIC_DIR = os.path.join(BASE_DIR, 'static')
 
 # ⚠️  Dev only — set DJANGO_SECRET_KEY env var before deploying
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "django-insecure-dev-only-change-before-deploy")
@@ -56,11 +57,8 @@ DATABASES = {
     }
 }
 
+STATICFILES_DIRS = [STATIC_DIR]
 STATIC_URL = "/static/"
-
-STATICFILES_DIRS = [
-    BASE_DIR / "static",
-]
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 

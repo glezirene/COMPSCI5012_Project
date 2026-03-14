@@ -5,14 +5,14 @@
 <div class="home-grid">
 
     <!-- Left: Recent Reviews -->
-    <div class="custom-card">
+    <div class="custom-card order-3 order-lg-1">
         <div class="custom-card-title">Recent Reviews</div>
         {% if user.is_authenticated %}
             {% if recent_reviews %}
                 {% for r in recent_reviews %}
                 <div class="review-item">
                     <a href="{% url 'film_detail' r.film.pk %}" style="color:#fff;text-decoration:none;font-weight:600;font-size:0.85rem;">{{ r.film.title }}</a>
-                    <div class="review-meta">{{ r.mood.name }} · <span class="stars">{% for i in "12345" %}{% if forloop.counter <= r.rating %}★{% else %}☆{% endif %}{% endfor %}</span></div>
+                    <span class="review-badge {{ r.mood.name|lower }}-btn">{{ r.mood.name }}</span> · <span class="stars">{% for i in "12345" %}{% if forloop.counter <= r.rating %}★{% else %}☆{% endif %}{% endfor %}</span>
                     {% if r.review_text %}
                     <div class="review-text">{{ r.review_text|truncatechars:80 }}</div>
                     {% endif %}
@@ -30,18 +30,17 @@
     </div>
 
     <!-- Centre: Search + Film grid -->
-    <div class="custom-card">
+    <div class="custom-card order-1 order-lg-2">
         <div class="custom-card-title">Search</div>
-        <form method="get" action="{% url 'film_list' %}" style="margin-bottom:1rem;">
-            <input type="text" name="q" value="{{ query }}" placeholder="Search by movie title..." class="form-control">
+            <input type="text" id="filmSearch" placeholder="Start typing a movie title..." class="form-control">
             {% if mood_id %}
             <input type="hidden" name="mood_id" value="{{ mood_id }}">
             {% endif %}
-        </form>
-        <div class="film-grid">
+        <div style="height:20px;"></div>
+        <div class="film-grid" id="filmGrid">
             {% for film in films %}
             <a href="{% url 'film_detail' film.pk %}" class="film-card">
-                <div class="film-poster">🎬</div>
+                <img class="card-img-top" src="/static/placeholder.png" alt="Placeholder image">
                 <div class="film-info">
                     <div class="film-title">{{ film.title }}</div>
                     <div class="film-year">{{ film.release_year }}</div>
@@ -55,12 +54,12 @@
     </div>
 
     <!-- Right: Mood filter -->
-    <div class="custom-card">
+    <div class="custom-card order-2 order-lg-3">
         <div class="custom-card-title">What are you in the mood for?</div>
         <div class="mood-grid">
             {% for mood in moods %}
             <a href="{% url 'film_list' %}?mood_id={{ mood.id }}"
-               class="mood-btn {{ mood.name|lower }}-btn {% if mood_id == mood.id|stringformat:'s' %}active{% endif %}">
+               class="custom-btn {{ mood.name|lower }}-btn {% if mood_id == mood.id|stringformat:'s' %}active{% endif %}">
                 {{ mood.name }}
             </a>
             {% endfor %}
@@ -73,4 +72,44 @@
     </div>
 
 </div>
+{% endblock %}
+{% block scriptblock %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const searchInput = document.getElementById('filmSearch');
+    const filmGrid = document.querySelector('.film-grid');
+
+    searchInput.addEventListener('input', function () {
+        const query = this.value;
+
+        fetch(`/ajax/film-search/?q=${encodeURIComponent(query)}`)
+            .then(response => response.json())
+
+            .then(data => {
+                filmGrid.innerHTML = "";
+                if (!data.films || data.films.length === 0) {
+                    filmGrid.innerHTML = `<p style="color:#888;grid-column:1/-1;text-align:center;">No films found.</p>`;
+                    return;
+                }
+
+                data.films.forEach(film => {
+                    const filmCard = `
+                        <a href="/films/${film.pk}/" class="film-card">
+                            <img class="card-img-top" src="/static/placeholder.png" alt="Placeholder image">
+                            <div class="film-info">
+                                <div class="film-title">${film.fields.title}</div>
+                                <div class="film-year">${film.fields.release_year}</div>
+                                <div class="film-genre">${film.fields.genre}</div>
+                            </div>
+                        </a>
+                    `;
+
+                    filmGrid.innerHTML += filmCard;
+                });
+            })
+            .catch(error => console.error("Search error:", error));
+    });
+});
+</script>
 {% endblock %}

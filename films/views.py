@@ -1,3 +1,4 @@
+import json, os
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
@@ -5,6 +6,8 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
 from django.db.models import Count
 from django.views.decorators.http import require_POST
+from django.http import JsonResponse
+from django.conf import settings
 from .models import Film, Mood, ReviewEntry, WatchlistItem
 from .forms import RegisterForm, ReviewForm
 
@@ -75,6 +78,21 @@ def home_view(request):
         "mood_id": "",
     })
 
+def film_search(request):
+    query = request.GET.get("q", "").lower()
+    json_path = os.path.join(settings.BASE_DIR, "films", "fixtures", "films.json")
+    
+    with open(json_path, "r", encoding="utf-8") as f:
+        films = json.load(f)
+    
+    if query:
+        films = [
+            film for film in films
+            if query in film["fields"]["title"].lower()
+        ]
+    
+    return JsonResponse({"films": films})
+
 
 # ─────────────────────────────────────────
 # Film views
@@ -88,7 +106,7 @@ def film_list_view(request):
     if query:
         films = films.filter(title__icontains=query)
     if mood_id:
-        films = films.filter(reviewentry__mood__id=mood_id).distinct()
+        films = films.filter(reviews__mood__id=mood_id).distinct()
 
     moods = Mood.objects.all()
     return render(request, "films/film_list.html", {
