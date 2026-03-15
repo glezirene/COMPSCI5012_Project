@@ -40,7 +40,7 @@
         <div class="film-grid" id="filmGrid">
             {% for film in films %}
             <a href="{% url 'film_detail' film.pk %}" class="film-card">
-                <img class="card-img-top" src="/static/placeholder.png" alt="Placeholder image">
+               <img class="card-img-top" src="/static/posters/{{ film.title|slugify }}.jpg" alt="{{ film.title }} poster" onerror="this.src='/static/placeholder.png'">
                 <div class="film-info">
                     <div class="film-title">{{ film.title }}</div>
                     <div class="film-year">{{ film.release_year }}</div>
@@ -101,7 +101,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 data.films.forEach(film => {
                     const filmCard = `
                         <a href="/films/${film.pk}/" class="film-card">
-                            <img class="card-img-top" src="/static/placeholder.png" alt="Placeholder image">
+                           <img class="card-img-top"
+src="/static/posters/${film.fields.title.toLowerCase().replace(/é/g,'e').replace(/&/g,'').replace(/\s+/g,'-')}.jpg"
+onerror="this.src='/static/placeholder.png'">
                             <div class="film-info">
                                 <div class="film-title">${film.fields.title}</div>
                                 <div class="film-year">${film.fields.release_year}</div>
