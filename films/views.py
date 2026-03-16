@@ -3,8 +3,10 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
-from django.db.models import Count
+from django.db.models import Count, OuterRef, Subquery
 from django.views.decorators.http import require_POST
+from django.http import JsonResponse
+from django.conf import settings
 from .models import Film, Mood, ReviewEntry, WatchlistItem
 from .forms import RegisterForm, ReviewForm
 
@@ -75,29 +77,43 @@ def home_view(request):
         "mood_id": "",
     })
 
+def film_search(request):
+    query = request.GET.get("q", "").lower()
+    mood_id = request.GET.get("mood_id", "").strip()
+    films = Film.objects.all()
+
+    # search by title
+    if query:
+        films = films.filter(title__icontains=query)
+
+    # search using mood button
+    if mood_id:
+        top_mood_subquery = (
+            ReviewEntry.objects.filter(film=OuterRef('pk'))
+            .values('film')
+            .annotate(top_mood_count = Count('mood'))
+            .order_by('-top_mood_count', 'mood')
+            .values('mood')[:1]
+        )
+        films = films.annotate(top_mood=Subquery(top_mood_subquery)).filter(top_mood=mood_id) 
+
+    film_list = [
+        {
+            "pk": film.pk,
+            "fields": {
+                "title": film.title,
+                "release_year": film.release_year,
+                "genre": film.genre
+            }
+        }
+        for film in films
+    ]
+
+    return JsonResponse({"films": film_list})
 
 # ─────────────────────────────────────────
 # Film views
 # ─────────────────────────────────────────
-
-def film_list_view(request):
-    query = request.GET.get("q", "").strip()
-    mood_id = request.GET.get("mood_id", "").strip()
-
-    films = Film.objects.all()
-    if query:
-        films = films.filter(title__icontains=query)
-    if mood_id:
-        films = films.filter(reviewentry__mood__id=mood_id).distinct()
-
-    moods = Mood.objects.all()
-    return render(request, "films/film_list.html", {
-        "films": films,
-        "moods": moods,
-        "query": query,
-        "mood_id": mood_id,
-    })
-
 
 def film_detail_view(request, film_id):
     film = get_object_or_404(Film, pk=film_id)
@@ -166,11 +182,9 @@ def edit_review_view(request, review_id):
 @login_required
 def delete_review_view(request, review_id):
     review = get_object_or_404(ReviewEntry, pk=review_id, user=request.user)
-    if request.method == "POST":
-        review.delete()
-        messages.success(request, "Review deleted.")
-        return redirect("profile")
-    return render(request, "films/review_confirm_delete.html", {"review": review})
+    review.delete()
+    messages.success(request, "Review deleted.")
+    return redirect("profile")
 
 
 # ─────────────────────────────────────────

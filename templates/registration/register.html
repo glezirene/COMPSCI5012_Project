@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<div class="container min-vh-100 d-flex justify-content-center align-items-start pt-5">
+    <div class="custom-card" style="width: 400px;">
+        <div class="card-body">
+            <h3 class="custom-card-title text-center mb-4">Create an Account</h3>
+
+            <form id="form" method="POST" action="{% url 'register' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                {{ form.username.label_tag }}
+                {{ form.username }}
+                {{ form.username.errors }}
+                </div>
+
+                <div class="mb-3">
+                {{ form.email.label_tag }}
+                {{ form.email }}
+                {{ form.email.errors }}
+                </div>
+
+                <div class="mb-3">
+                {{ form.password1.label_tag }}
+                {{ form.password1 }}
+                {{ form.password1.errors }}
+                </div>
+
+                <div class="mb-4">
+                {{ form.password2.label_tag }}
+                {{ form.password2 }}
+                {{ form.password2.errors }}
+                </div>
+                
+                <div class="d-grid mt-4">
+                    <button type="submit" class="btn btn-success btn-lg btn-block">
+                        Register
+                    </button>
+                </div>
+
+            </form>
+            
+        </div>
+    </div>
+</div>
+
+{% endblock %}

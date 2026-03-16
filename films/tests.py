@@ -150,10 +150,10 @@ class AuthViewTest(TestCase):
 
 
     def test_logout_post_redirects(self):
-    	make_user()
-    	self.client.login(username="testuser", password="testpass123")
-    	response = self.client.post(reverse("logout"))
-    	self.assertRedirects(response, reverse("login"))
+        make_user()
+        self.client.login(username="testuser", password="testpass123")
+        response = self.client.post(reverse("logout"))
+        self.assertRedirects(response, reverse("login"))
 
 
 

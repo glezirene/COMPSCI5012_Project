@@ -9,9 +9,9 @@ urlpatterns = [
 
     # Home
     path("", views.home_view, name="home"),
+    path("ajax/film-search/", views.film_search, name="film_search"),
 
     # Films
-    path("films/", views.film_list_view, name="film_list"),
     path("films/<int:film_id>/", views.film_detail_view, name="film_detail"),
 
     # Reviews
