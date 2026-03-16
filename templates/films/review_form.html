@@ -9,7 +9,7 @@
         <div class="col-12 col-md-auto d-flex justify-content-center order-2 order-md-1">
             <div class="card film-review-poster-card">
                 <div class="film-info">
-                    <img class="card-img-top" src="/static/placeholder.png" alt="Placeholder image">
+                    <img class="card-img-top" src="/static/posters/{{ film.title|slugify }}.jpg" alt="{{ film.title }} poster" onerror="this.src='/static/placeholder.png'">
                     <!-- <div class="film-poster">🎬</div> -->
                     <div class="film-details">
                         <div class="film-title">{{ film.title }}</div>
