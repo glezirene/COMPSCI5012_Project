@@ -164,7 +164,7 @@ form label {
 }
 .film-review-subtitle {
     font-size: 0.8rem;
-    color: #ac87e3;
+    color: #ddc6ff;
 }
 .film-year  { font-size: 0.75rem; color: #888; }
 .film-genre { font-size: 0.7rem; color: #ac87e3; margin-top: 0.2rem; }
@@ -192,7 +192,7 @@ form label {
     color: #141515;
 }
 .custom-btn:hover { transform: translateY(-1px); }
-.custom-btn-primary  { background: #9b59b6; color: #eff1f3; }
+.custom-btn-primary  { background: #ac87e3; color: #141515; }
 .btn-danger   { background: #e74c3c; color: #eff1f3; }
 .custom-btn-secondary{ background: #888; color: #141515; }
 .btn-sm { padding: 0.35rem 0.75rem; font-size: 0.8rem; }
