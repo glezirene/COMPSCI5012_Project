@@ -10,7 +10,7 @@ SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "django-insecure-dev-only-chang
 DEBUG = os.environ.get("DJANGO_DEBUG", "True") == "True"
 
 # In production: export DJANGO_ALLOWED_HOSTS=yourdomain.com
-ALLOWED_HOSTS = [os.environ.get("DJANGO_ALLOWED_HOSTS", "*").split(","), '3152031s.pythonanywhere.com']
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "*").split(",") + ['3152031s.pythonanywhere.com']
 
 INSTALLED_APPS = [
     "django.contrib.admin",
