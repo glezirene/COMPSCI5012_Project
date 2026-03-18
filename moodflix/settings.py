@@ -1,16 +1,24 @@
 import os
 from pathlib import Path
+from django.core.exceptions import ImproperlyConfigured
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 STATIC_DIR = os.path.join(BASE_DIR, 'static')
 
 # ⚠️  Dev only — set DJANGO_SECRET_KEY env var before deploying
-SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "django-insecure-dev-only-change-before-deploy")
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
+if not SECRET_KEY:
+    raise ImproperlyConfigured("DJANGO_SECRET_KEY is not set")
 
-DEBUG = os.environ.get("DJANGO_DEBUG", "True") == "True"
+DEBUG = os.environ.get("DJANGO_DEBUG", "False").lower() == "true"
 
 # In production: export DJANGO_ALLOWED_HOSTS=yourdomain.com
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "*").split(",") + ['3152031s.pythonanywhere.com']
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in os.environ.get("DJANGO_ALLOWED_HOSTS", "").split(",")
+    if host.strip()
+]
+ALLOWED_HOSTS += ['3152031s.pythonanywhere.com']
 
 INSTALLED_APPS = [
     "django.contrib.admin",
