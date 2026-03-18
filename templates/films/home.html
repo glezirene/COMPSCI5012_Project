@@ -40,7 +40,11 @@
         <div class="film-grid" id="filmGrid">
             {% for film in films %}
             <a href="{% url 'film_detail' film.pk %}" class="film-card">
-                <img class="card-img-top" src="/static/posters/{{ film.title|slugify }}.jpg" alt="{{ film.title }} poster" onerror="this.src='/static/placeholder.png'" loading="lazy" decoding="async">
+                {% if forloop.first %}
+                    <img class="card-img-top" src="/static/posters/{{ film.title|slugify }}.webp" alt="{{ film.title }} poster" onerror="this.src='/static/placeholder.png'" decoding="sync" fetchpriority="high" loading="eager">
+                {% else %}
+                    <img class="card-img-top" src="/static/posters/{{ film.title|slugify }}.webp" alt="{{ film.title }} poster" onerror="this.src='/static/placeholder.png'" decoding="async">
+                {% endif %}
                     <div class="film-info">
                         <div class="film-title">{{ film.title }}</div>
                         <div class="film-year">{{ film.release_year }}</div>
