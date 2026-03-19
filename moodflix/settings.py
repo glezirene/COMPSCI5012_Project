@@ -6,11 +6,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 STATIC_DIR = os.path.join(BASE_DIR, 'static')
 
 # ⚠️  Dev only — set DJANGO_SECRET_KEY env var before deploying
-SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
-if not SECRET_KEY:
-    raise ImproperlyConfigured("DJANGO_SECRET_KEY is not set")
+SECRET_KEY = os.environ.get(
+    "DJANGO_SECRET_KEY",
+    "django-insecure-dev-only-change-before-deploy"
+)
 
-DEBUG = os.environ.get("DJANGO_DEBUG", "False").lower() == "true"
+DEBUG = True
 
 # In production: export DJANGO_ALLOWED_HOSTS=yourdomain.com
 ALLOWED_HOSTS = [
